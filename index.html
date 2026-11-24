@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бюро скрытых правил - Лаборатория признаков</title>
+    <style>
+        :root {
+            --bg-page: #DEDCE5;
+            --bg-body: #F5F3EC;
+            --bg-dark: #292735;
+            --border-chamber: #A69AB9;
+            --accent: #B8A6DA;
+            --bg-journal: #EAE6EE;
+            --text-light: #292735;
+            --text-dark: #F5F3EC;
+            --positive: #36705B;
+            --negative: #A34F58;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--bg-page);
+            color: var(--text-light);
+            font-size: 18px;
+            line-height: 1.5;
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        .container {
+            max-width: 1180px;
+            margin: 0 auto;
+            background: var(--bg-body);
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .container::before,
+        .container::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--border-chamber);
+            border-radius: 50%;
+            top: 14px;
+        }
+
+        .container::before { left: 14px; }
+        .container::after { right: 14px; }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-left {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .header-label {
+            font-size: 12px;
+            letter-spacing: 2px;
+            color: var(--border-chamber);
+            margin-bottom: 4px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .header-topic {
+            font-size: 16px;
+            color: var(--border-chamber);
+        }
+
+        .counter {
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .counter-label {
+            font-size: 14px;
+            color: var(--border-chamber);
+            margin-bottom: 4px;
+        }
+
+        .counter-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--text-light);
+        }
+
+        .device-panel {
+            background: var(--bg-dark);
+            border-radius: 14px;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .chamber-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chamber-label {
+            color: var(--text-dark);
+            font-size: 14px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .chamber {
+            width: 210px;
+            height: 210px;
+            border-radius: 50%;
+            border: 10px solid var(--border-chamber);
+            background: var(--bg-body);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .chamber-empty {
+            color: var(--border-chamber);
+            font-size: 16px;
+        }
+
+        .chamber-object {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .chamber-text {
+            font-size: 16px;
+            font-weight: 500;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+        .chamber-conditions {
+            font-size: 13px;
+            color: var(--border-chamber);
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .remove-btn {
+            margin-top: 12px;
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--border-chamber);
+            color: var(--text-dark);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .remove-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .control-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .control-label {
+            color: var(--text-dark);
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .control-question {
+            color: var(--text-dark);
+            font-size: 15px;
+        }
+
+        .prediction-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .prediction-btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 12px 16px;
+            background: var(--bg-body);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            color: var(--text-light);
+            transition: all 0.2s;
+        }
+
+        .prediction-btn:hover {
+            background: #fff;
+        }
+
+        .prediction-btn.active {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: var(--text-dark);
+        }
+
+        .check-btn {
+            padding: 14px 24px;
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-light);
+            transition: all 0.2s;
+        }
+
+        .check-btn:hover:not(:disabled) {
+            background: #a896c8;
+        }
+
+        .check-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .result-message {
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result-accept {
+            background: rgba(54, 112, 91, 0.2);
+            color: var(--positive);
+        }
+
+        .result-reject {
+            background: rgba(163, 79, 88, 0.2);
+            color: var(--negative);
+        }
+
+        .journals {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .journal {
+            background: var(--bg-journal);
+            border-radius: 12px;
+            padding: 16px;
+            min-height: 120px;
+        }
+
+        .journal-header {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .journal-icon {
+            font-size: 20px;
+        }
+
+        .journal-empty {
+            color: var(--border-chamber);
+            font-size: 14px;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .journal-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            background: var(--bg-body);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .journal-item-text {
+            flex: 1;
+        }
+
+        .journal-item-label {
+            font-size: 12px;
+            color: var(--border-chamber);
+        }
+
+        .collection {
+            margin-bottom: 24px;
+        }
+
+        .collection-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+
+        .collection-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        .card {
+            background: var(--bg-body);
+            border: 2px solid var(--border-chamber);
+            border-radius: 10px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px;
+            text-align: center;
+            position: relative;
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .card-text {
+            font-size: 14px;
+            font-weight: 500;
+            word-wrap: break-word;
+        }
+
+        .card-conditions {
+            font-size: 11px;
+            color: var(--border-chamber);
+            margin-top: 4px;
+        }
+
+        .card-checked {
+            opacity: 0.5;
+            position: relative;
+        }
+
+        .card-checked::after {
+            content: '✓';
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: var(--border-chamber);
+            color: var(--text-dark);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .service-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .service-btn {
+            padding: 12px 20px;
+            background: var(--bg-body);
+            border: 2px solid var(--border-chamber);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            color: var(--text-light);
+            transition: all 0.2s;
+        }
+
+        .service-btn:hover:not(:disabled) {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: var(--text-dark);
+        }
+
+        .service-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .how-to-play {
+            background: var(--bg-journal);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .how-to-play summary {
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .how-to-play-content {
+            margin-top: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .how-to-play-content ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--bg-body);
+            border-radius: 14px;
+            padding: 28px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+
+        .modal-text {
+            font-size: 16px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .modal-btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .modal-btn-primary {
+            background: var(--accent);
+            color: var(--text-light);
+        }
+
+        .modal-btn-primary:hover {
+            background: #a896c8;
+        }
+
+        .modal-btn-secondary {
+            background: var(--bg-journal);
+            color: var(--text-light);
+        }
+
+        .modal-btn-secondary:hover {
+            background: #d8d4dc;
+        }
+
+        .result-card {
+            background: var(--bg-journal);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .result-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-chamber);
+        }
+
+        .result-stat:last-child {
+            border-bottom: none;
+        }
+
+        .result-stat-label {
+            font-weight: bold;
+        }
+
+        .result-message-final {
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .result-success {
+            background: rgba(54, 112, 91, 0.2);
+            color: var(--positive);
+        }
+
+        .result-partial {
+            background: rgba(163, 79, 88, 0.1);
+            color: var(--text-light);
+        }
+
+        .result-fail {
+            background: rgba(163, 79, 88, 0.2);
+            color: var(--negative);
+        }
+
+        .explanation-section {
+            margin-top: 20px;
+        }
+
+        .explanation-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .explanation-rule {
+            background: var(--bg-journal);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .explanation-objects {
+            margin-top: 16px;
+        }
+
+        .explanation-object {
+            background: var(--bg-body);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .explanation-object-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .explanation-object-name {
+            font-weight: bold;
+        }
+
+        .explanation-object-result {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .result-accepted {
+            background: var(--positive);
+            color: var(--text-dark);
+        }
+
+        .result-rejected {
+            background: var(--negative);
+            color: var(--text-dark);
+        }
+
+        .control-progress {
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 16px;
+            color: var(--border-chamber);
+        }
+
+        .control-object {
+            background: var(--bg-journal);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .control-object-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .control-object-conditions {
+            font-size: 14px;
+            color: var(--border-chamber);
+            font-style: italic;
+        }
+
+        .discussion-question {
+            background: var(--accent);
+            color: var(--text-dark);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        @media (max-width: 750px) {
+            body {
+                padding: 12px;
+                font-size: 16px;
+            }
+
+            .container {
+                padding: 16px;
+            }
+
+            .header {
+                flex-direction: column;
+            }
+
+            .device-panel {
+                grid-template-columns: 1fr;
+            }
+
+            .journals {
+                grid-template-columns: 1fr;
+            }
+
+            .collection-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .chamber {
+                width: 180px;
+                height: 180px;
+            }
+
+            .chamber-text {
+                font-size: 14px;
+            }
+
+            .service-buttons {
+                flex-direction: column;
+            }
+
+            .service-btn {
+                width: 100%;
+            }
+        }
+
+        @media (min-width: 751px) and (max-width: 1024px) {
+            .collection-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-label">БЮРО СКРЫТЫХ ПРАВИЛ</div>
+                <div class="header-title">Лаборатория признаков</div>
+                <div class="header-topic">Синтаксические единицы: словосочетание, предложение и текст</div>
+            </div>
+            <div class="counter">
+                <div class="counter-label">Проверок</div>
+                <div class="counter-value" id="counter">00</div>
+            </div>
+        </div>
+
+        <div class="device-panel">
+            <div class="chamber-section">
+                <div class="chamber-label">Камера наблюдения</div>
+                <div class="chamber" id="chamber">
+                    <div class="chamber-empty" id="chamberEmpty">Выберите карточку</div>
+                    <div class="chamber-object" id="chamberObject" hidden>
+                        <div class="chamber-text" id="chamberText"></div>
+                        <div class="chamber-conditions" id="chamberConditions"></div>
+                    </div>
+                </div>
+                <button class="remove-btn" id="removeBtn" hidden>Убрать карточку</button>
+            </div>
+
+            <div class="control-section">
+                <div class="control-label">Ваш прогноз</div>
+                <div class="control-question">Машина примет этот объект?</div>
+                <div class="prediction-buttons">
+                    <button class="prediction-btn" id="predictAccept" aria-pressed="false">Думаю: примет</button>
+                    <button class="prediction-btn" id="predictReject" aria-pressed="false">Думаю: отвергнет</button>
+                </div>
+                <button class="check-btn" id="checkBtn" disabled>Проверить образец</button>
+                <div class="result-message" id="resultMessage" aria-live="polite"></div>
+            </div>
+        </div>
+
+        <div class="journals">
+            <div class="journal">
+                <div class="journal-header">
+                    <span class="journal-icon">✓</span>
+                    <span>Принимает</span>
+                </div>
+                <div id="acceptJournal">
+                    <div class="journal-empty">Пока нет проверенных карточек</div>
+                </div>
+            </div>
+            <div class="journal">
+                <div class="journal-header">
+                    <span class="journal-icon">×</span>
+                    <span>Отвергает</span>
+                </div>
+                <div id="rejectJournal">
+                    <div class="journal-empty">Пока нет проверенных карточек</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="collection">
+            <div class="collection-header">Коллекция объектов</div>
+            <div class="collection-grid" id="collectionGrid"></div>
+        </div>
+
+        <div class="service-buttons">
+            <button class="service-btn" id="hintBtn">Подсказка: один пример</button>
+            <button class="service-btn" id="testBtn">Проверить свою версию</button>
+            <button class="service-btn" id="revealBtn">Открыть правило</button>
+            <button class="service-btn" id="restartBtn">Начать заново</button>
+        </div>
+
+        <details class="how-to-play">
+            <summary>Как играть</summary>
+            <div class="how-to-play-content">
+                <p>Перед вами исследовательский прибор, который принимает или отвергает объекты по скрытому правилу.</p>
+                <ul>
+                    <li>Выберите карточку из коллекции</li>
+                    <li>Объект появится в камере наблюдения</li>
+                    <li>Сделайте прогноз: примет или отвергнет прибор</li>
+                    <li>Нажмите "Проверить образец"</li>
+                    <li>Результат появится в журнале</li>
+                    <li>Анализируйте закономерности и выдвигайте гипотезы</li>
+                </ul>
+                <p><strong>Подсказка:</strong> можно использовать один раз для автоматической проверки объекта.</p>
+                <p><strong>Проверить свою версию:</strong> когда будете готовы, проверьте свою гипотезу на четырёх новых объектах.</p>
+            </div>
+        </details>
+
+        <div id="controlSection" hidden>
+            <div class="modal-content">
+                <div class="modal-title">Проверка версии</div>
+                <div class="control-progress" id="controlProgress">Объект 1 из 4</div>
+                <div class="control-object" id="controlObject">
+                    <div class="control-object-name" id="controlObjectName"></div>
+                    <div class="control-object-conditions" id="controlObjectConditions"></div>
+                </div>
+                <div class="prediction-buttons">
+                    <button class="prediction-btn" id="controlPredictAccept">Примет</button>
+                    <button class="prediction-btn" id="controlPredictReject">Отвергнет</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="resultSection" hidden>
+            <div class="modal-content">
+                <div class="modal-title">Проверка завершена</div>
+                <div class="result-card">
+                    <div class="result-stat">
+                        <span class="result-stat-label">Верных прогнозов:</span>
+                        <span id="correctPredictions">0 из 4</span>
+                    </div>
+                    <div class="result-stat">
+                        <span class="result-stat-label">Исследовательских проверок:</span>
+                        <span id="totalChecks">0</span>
+                    </div>
+                    <div class="result-stat">
+                        <span class="result-stat-label">Подсказка:</span>
+                        <span id="hintUsed">не использована</span>
+                    </div>
+                </div>
+                <div class="result-message-final" id="finalMessage"></div>
+                
+                <div class="explanation-section">
+                    <div class="explanation-title">Разбор</div>
+                    <div class="explanation-rule">
+                        <strong>Скрытое правило:</strong><br>
+                        Прибор принимает предложения и тексты (они выражают законченную или связную мысль), отвергает словосочетания (не выражают законченной мысли).
+                    </div>
+                    
+                    <div class="explanation-objects">
+                        <div class="explanation-title">Контрольные объекты:</div>
+                        <div id="controlExplanation"></div>
+                    </div>
+                    
+                    <details class="explanation-objects">
+                        <summary class="explanation-title">Все исследовательские объекты</summary>
+                        <div id="researchExplanation"></div>
+                    </details>
+                </div>
+                
+                <div class="discussion-question">
+                    Какой пример помог вам больше всего? Почему?
+                </div>
+                
+                <div class="modal-buttons">
+                    <button class="modal-btn modal-btn-primary" id="restartFromResult">Начать заново</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="confirmModal" class="modal" hidden>
+            <div class="modal-content">
+                <div class="modal-title" id="confirmTitle"></div>
+                <div class="modal-text" id="confirmText"></div>
+                <div class="modal-buttons">
+                    <button class="modal-btn modal-btn-primary" id="confirmYes"></button>
+                    <button class="modal-btn modal-btn-secondary" id="confirmNo">Отмена</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const config = {
+            topic: "Синтаксические единицы: словосочетание, предложение и текст",
+            rule: "Прибор принимает предложения и тексты (они выражают законченную или связную мысль), отвергает словосочетания (не выражают законченной мысли).",
+            researchObjects: [
+                { id: 1, name: "Мама улыбается.", conditions: "Двусоставное нераспространённое", accepted: true, explanation: "Есть подлежащее (мама) и сказуемое (улыбается), выражает законченную мысль" },
+                { id: 2, name: "Ребёнок спит.", conditions: "Двусоставное нераспространённое", accepted: true, explanation: "Есть подлежащее (ребёнок) и сказуемое (спит), выражает законченную мысль" },
+                { id: 3, name: "Мама обнимает своего ребёнка.", conditions: "Двусоставное распространённое", accepted: true, explanation: "Есть главные и второстепенные члены, выражает законченную мысль" },
+                { id: 4, name: "Любящая мама читает сказку.", conditions: "Двусоставное распространённое", accepted: true, explanation: "Есть главные и второстепенные члены, выражает законченную мысль" },
+                { id: 5, name: "Маленький ребёнок крепко спит.", conditions: "Двусоставное распространённое", accepted: true, explanation: "Есть главные и второстепенные члены, выражает законченную мысль" },
+                { id: 6, name: "Материнская любовь.", conditions: "Назывное предложение", accepted: true, explanation: "Выражает законченную мысль, называет предмет" },
+                { id: 7, name: "Мама обнимает ребёнка. Малыш улыбается.", conditions: "Текст из 2 предложений", accepted: true, explanation: "Выражает связную мысль, состоит из предложений" },
+                { id: 8, name: "Мама печёт пироги. Дети помогают ей.", conditions: "Текст из 2 предложений", accepted: true, explanation: "Выражает связную мысль, состоит из предложений" },
+                { id: 9, name: "мамина улыбка", conditions: "Прилагательное + существительное", accepted: false, explanation: "Не выражает законченную мысль, это только часть предложения" },
+                { id: 10, name: "нежный малыш", conditions: "Прилагательное + существительное", accepted: false, explanation: "Не выражает законченную мысль, это только часть предложения" },
+                { id: 11, name: "крепко обнимать", conditions: "Наречие + глагол (инфинитив)", accepted: false, explanation: "Не выражает законченную мысль, это только часть предложения" },
+                { id: 12, name: "читать сказку", conditions: "Глагол (инфинитив) + существительное", accepted: false, explanation: "Не выражает законченную мысль, это только часть предложения" },
+                { id: 13, name: "печь пироги", conditions: "Глагол (инфинитив) + существительное", accepted: false, explanation: "Не выражает законченную мысль, это только часть предложения" },
+                { id: 14, name: "дарить цветы", conditions: "Глагол (инфинитив) + существительное", accepted: false, explanation: "Не выражает законченную мысль, это только часть предложения" }
+            ],
+            controlObjects: [
+                { id: 15, name: "Дети дарят маме цветы.", conditions: "Двусоставное распространённое предложение", accepted: true, explanation: "Есть главные и второстепенные члены, выражает законченную мысль" },
+                { id: 16, name: "Мама варит кашу. Ребёнок ест.", conditions: "Текст из 2 предложений", accepted: true, explanation: "Выражает связную мысль, состоит из предложений" },
+                { id: 17, name: "мамина забота", conditions: "Прилагательное + существительное", accepted: false, explanation: "Не выражает законченную мысль, это только часть предложения" },
+                { id: 18, name: "готовить обед", conditions: "Глагол (инфинитив) + существительное", accepted: false, explanation: "Не выражает законченную мысль, это только часть предложения" }
+            ]
+        };
+
+        const state = {
+            stage: 'research',
+            selectedCard: null,
+            prediction: null,
+            journal: { accept: [], reject: [] },
+            checkCount: 0,
+            hintUsed: false,
+            controlOrder: [],
+            controlAnswers: [],
+            controlStep: 0,
+            checkedObjects: new Set()
+        };
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function initGame() {
+            state.stage = 'research';
+            state.selectedCard = null;
+            state.prediction = null;
+            state.journal = { accept: [], reject: [] };
+            state.checkCount = 0;
+            state.hintUsed = false;
+            state.controlOrder = shuffleArray(config.controlObjects);
+            state.controlAnswers = [];
+            state.controlStep = 0;
+            state.checkedObjects = new Set();
+            
+            renderCollection();
+            renderJournals();
+            updateCounter();
+            updateChamber();
+            updateControls();
+            
+            document.getElementById('controlSection').hidden = true;
+            document.getElementById('resultSection').hidden = true;
+            document.getElementById('confirmModal').hidden = true;
+        }
+
+        function renderCollection() {
+            const grid = document.getElementById('collectionGrid');
+            grid.innerHTML = '';
+            
+            const shuffledResearch = shuffleArray(config.researchObjects);
+            
+            shuffledResearch.forEach(obj => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.id = obj.id;
+                
+                if (state.checkedObjects.has(obj.id)) {
+                    card.classList.add('card-checked');
+                }
+                
+                card.innerHTML = `
+                    <div class="card-text">${obj.name}</div>
+                    <div class="card-conditions">${obj.conditions}</div>
+                `;
+                
+                card.addEventListener('click', () => selectCard(obj));
+                grid.appendChild(card);
+            });
+        }
+
+        function selectCard(obj) {
+            if (state.stage !== 'research') return;
+            
+            state.selectedCard = obj;
+            state.prediction = null;
+            
+            document.getElementById('predictAccept').classList.remove('active');
+            document.getElementById('predictAccept').setAttribute('aria-pressed', 'false');
+            document.getElementById('predictReject').classList.remove('active');
+            document.getElementById('predictReject').setAttribute('aria-pressed', 'false');
+            document.getElementById('resultMessage').textContent = '';
+            document.getElementById('resultMessage').className = 'result-message';
+            
+            updateChamber();
+            updateControls();
+        }
+
+        function updateChamber() {
+            const chamberEmpty = document.getElementById('chamberEmpty');
+            const chamberObject = document.getElementById('chamberObject');
+            const chamberText = document.getElementById('chamberText');
+            const chamberConditions = document.getElementById('chamberConditions');
+            const removeBtn = document.getElementById('removeBtn');
+            
+            if (state.selectedCard) {
+                chamberEmpty.hidden = true;
+                chamberObject.hidden = false;
+                chamberText.textContent = state.selectedCard.name;
+                chamberConditions.textContent = state.selectedCard.conditions;
+                removeBtn.hidden = false;
+            } else {
+                chamberEmpty.hidden = false;
+                chamberObject.hidden = true;
+                removeBtn.hidden = true;
+            }
+        }
+
+        function updateControls() {
+            const checkBtn = document.getElementById('checkBtn');
+            checkBtn.disabled = !(state.selectedCard && state.prediction !== null && state.stage === 'research');
+        }
+
+        function makePrediction(prediction) {
+            if (state.stage !== 'research') return;
+            
+            state.prediction = prediction;
+            
+            document.getElementById('predictAccept').classList.remove('active');
+            document.getElementById('predictAccept').setAttribute('aria-pressed', 'false');
+            document.getElementById('predictReject').classList.remove('active');
+            document.getElementById('predictReject').setAttribute('aria-pressed', 'false');
+            
+            if (prediction === 'accept') {
+                document.getElementById('predictAccept').classList.add('active');
+                document.getElementById('predictAccept').setAttribute('aria-pressed', 'true');
+            } else {
+                document.getElementById('predictReject').classList.add('active');
+                document.getElementById('predictReject').setAttribute('aria-pressed', 'true');
+            }
+            
+            updateControls();
+        }
+
+        function checkSample() {
+            if (!state.selectedCard || state.prediction === null || state.stage !== 'research') return;
+            
+            if (state.checkedObjects.has(state.selectedCard.id)) {
+                alert('Этот объект уже проверен. Ответ есть в журнале — выберите другой.');
+                return;
+            }
+            
+            const obj = state.selectedCard;
+            const actualResult = obj.accepted ? 'accept' : 'reject';
+            
+            state.checkCount++;
+            state.checkedObjects.add(obj.id);
+            
+            if (obj.accepted) {
+                state.journal.accept.push({
+                    name: obj.name,
+                    label: `Опыт ${state.checkCount} · прогноз ${state.prediction === actualResult ? 'подтвердился' : 'не подтвердился'}`
+                });
+            } else {
+                state.journal.reject.push({
+                    name: obj.name,
+                    label: `Опыт ${state.checkCount} · прогноз ${state.prediction === actualResult ? 'подтвердился' : 'не подтвердился'}`
+                });
+            }
+            
+            const resultMessage = document.getElementById('resultMessage');
+            if (obj.accepted) {
+                resultMessage.textContent = 'Машина принимает образец';
+                resultMessage.className = 'result-message result-accept';
+            } else {
+                resultMessage.textContent = 'Машина отвергает образец';
+                resultMessage.className = 'result-message result-reject';
+            }
+            
+            renderJournals();
+            updateCounter();
+            renderCollection();
+            
+            state.selectedCard = null;
+            state.prediction = null;
+            updateChamber();
+            updateControls();
+            
+            document.getElementById('predictAccept').classList.remove('active');
+            document.getElementById('predictAccept').setAttribute('aria-pressed', 'false');
+            document.getElementById('predictReject').classList.remove('active');
+            document.getElementById('predictReject').setAttribute('aria-pressed', 'false');
+        }
+
+        function renderJournals() {
+            const acceptJournal = document.getElementById('acceptJournal');
+            const rejectJournal = document.getElementById('rejectJournal');
+            
+            if (state.journal.accept.length === 0) {
+                acceptJournal.innerHTML = '<div class="journal-empty">Пока нет проверенных карточек</div>';
+            } else {
+                acceptJournal.innerHTML = state.journal.accept.map(item => `
+                    <div class="journal-item">
+                        <div class="journal-item-text">${item.name}</div>
+                        <div class="journal-item-label">${item.label}</div>
+                    </div>
+                `).join('');
+            }
+            
+            if (state.journal.reject.length === 0) {
+                rejectJournal.innerHTML = '<div class="journal-empty">Пока нет проверенных карточек</div>';
+            } else {
+                rejectJournal.innerHTML = state.journal.reject.map(item => `
+                    <div class="journal-item">
+                        <div class="journal-item-text">${item.name}</div>
+                        <div class="journal-item-label">${item.label}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function updateCounter() {
+            document.getElementById('counter').textContent = state.checkCount.toString().padStart(2, '0');
+        }
+
+        function useHint() {
+            if (state.hintUsed || state.stage !== 'research') return;
+            
+            const unchecked = config.researchObjects.filter(obj => !state.checkedObjects.has(obj.id));
+            if (unchecked.length === 0) {
+                alert('Все образцы уже исследованы');
+                return;
+            }
+            
+            const hintObj = unchecked[Math.floor(Math.random() * unchecked.length)];
+            state.hintUsed = true;
+            state.checkedObjects.add(hintObj.id);
+            
+            if (hintObj.accepted) {
+                state.journal.accept.push({
+                    name: hintObj.name,
+                    label: 'Образец из подсказки'
+                });
+            } else {
+                state.journal.reject.push({
+                    name: hintObj.name,
+                    label: 'Образец из подсказки'
+                });
+            }
+            
+            renderJournals();
+            renderCollection();
+            document.getElementById('hintBtn').disabled = true;
+        }
+
+        function startControl() {
+            if (state.stage !== 'research') return;
+            
+            showConfirm(
+                'Проверка версии',
+                'Сформулируйте свою версию вслух или запишите на бумаге. Затем предскажите ответы прибора для четырёх новых объектов.',
+                'Начать проверку',
+                () => {
+                    state.stage = 'control';
+                    state.controlStep = 0;
+                    state.controlAnswers = [];
+                    showControlObject();
+                }
+            );
+        }
+
+        function showControlObject() {
+            if (state.controlStep >= 4) {
+                finishControl();
+                return;
+            }
+            
+            document.getElementById('controlSection').hidden = false;
+            document.getElementById('controlProgress').textContent = `Объект ${state.controlStep + 1} из 4`;
+            
+            const obj = state.controlOrder[state.controlStep];
+            document.getElementById('controlObjectName').textContent = obj.name;
+            document.getElementById('controlObjectConditions').textContent = obj.conditions;
+            
+            document.getElementById('controlPredictAccept').classList.remove('active');
+            document.getElementById('controlPredictReject').classList.remove('active');
+        }
+
+        function controlPredict(prediction) {
+            const obj = state.controlOrder[state.controlStep];
+            state.controlAnswers.push({
+                object: obj,
+                prediction: prediction
+            });
+            
+            state.controlStep++;
+            
+            if (state.controlStep >= 4) {
+                finishControl();
+            } else {
+                showControlObject();
+            }
+        }
+
+        function finishControl() {
+            state.stage = 'result';
+            document.getElementById('controlSection').hidden = true;
+            document.getElementById('resultSection').hidden = false;
+            
+            const correct = state.controlAnswers.filter(a => 
+                (a.prediction === 'accept' && a.object.accepted) ||
+                (a.prediction === 'reject' && !a.object.accepted)
+            ).length;
+            
+            document.getElementById('correctPredictions').textContent = `${correct} из 4`;
+            document.getElementById('totalChecks').textContent = state.checkCount;
+            document.getElementById('hintUsed').textContent = state.hintUsed ? 'использована' : 'не использована';
+            
+            const finalMessage = document.getElementById('finalMessage');
+            if (correct === 4) {
+                finalMessage.textContent = 'Отлично! Ваша версия позволила верно предсказать ответы на всех четырёх новых примерах';
+                finalMessage.className = 'result-message-final result-success';
+            } else if (correct >= 2) {
+                finalMessage.textContent = 'Часть прогнозов подтвердилась. Сравните примеры: какой признак стоит уточнить?';
+                finalMessage.className = 'result-message-final result-partial';
+            } else {
+                finalMessage.textContent = 'Эти результаты помогут пересмотреть версию. Посмотрите, чем отличаются принимаемые и отвергаемые объекты';
+                finalMessage.className = 'result-message-final result-fail';
+            }
+            
+            renderControlExplanation();
+            renderResearchExplanation();
+        }
+
+        function renderControlExplanation() {
+            const container = document.getElementById('controlExplanation');
+            container.innerHTML = state.controlAnswers.map(answer => {
+                const predicted = answer.prediction === 'accept' ? 'Примет' : 'Отвергнет';
+                const actual = answer.object.accepted ? 'Принял' : 'Отверг';
+                const isCorrect = (answer.prediction === 'accept' && answer.object.accepted) ||
+                                 (answer.prediction === 'reject' && !answer.object.accepted);
+                
+                return `
+                    <div class="explanation-object">
+                        <div class="explanation-object-header">
+                            <span class="explanation-object-name">${answer.object.name}</span>
+                            <span class="explanation-object-result ${isCorrect ? 'result-accepted' : 'result-rejected'}">
+                                ${isCorrect ? 'Верно' : 'Неверно'}
+                            </span>
+                        </div>
+                        <div><strong>Ваш прогноз:</strong> ${predicted}</div>
+                        <div><strong>Ответ прибора:</strong> ${actual}</div>
+                        <div><strong>Объяснение:</strong> ${answer.object.explanation}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderResearchExplanation() {
+            const container = document.getElementById('researchExplanation');
+            container.innerHTML = config.researchObjects.map(obj => `
+                <div class="explanation-object">
+                    <div class="explanation-object-header">
+                        <span class="explanation-object-name">${obj.name}</span>
+                        <span class="explanation-object-result ${obj.accepted ? 'result-accepted' : 'result-rejected'}">
+                            ${obj.accepted ? 'Принят' : 'Отвергнут'}
+                        </span>
+                    </div>
+                    <div><strong>Условия:</strong> ${obj.conditions}</div>
+                    <div><strong>Объяснение:</strong> ${obj.explanation}</div>
+                </div>
+            `).join('');
+        }
+
+        function revealRule() {
+            if (state.stage !== 'research') return;
+            
+            showConfirm(
+                'Открыть правило',
+                'Показать правило и завершить расследование без контрольной проверки?',
+                'Показать правило',
+                () => {
+                    state.stage = 'revealed';
+                    document.getElementById('resultSection').hidden = false;
+                    
+                    document.getElementById('correctPredictions').textContent = '—';
+                    document.getElementById('totalChecks').textContent = state.checkCount;
+                    document.getElementById('hintUsed').textContent = state.hintUsed ? 'использована' : 'не использована';
+                    
+                    const finalMessage = document.getElementById('finalMessage');
+                    finalMessage.textContent = 'Расследование завершено без контрольной проверки';
+                    finalMessage.className = 'result-message-final result-partial';
+                    
+                    document.getElementById('controlExplanation').innerHTML = '';
+                    renderResearchExplanation();
+                }
+            );
+        }
+
+        function showConfirm(title, text, yesText, onConfirm) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmText').textContent = text;
+            document.getElementById('confirmYes').textContent = yesText;
+            document.getElementById('confirmModal').hidden = false;
+            
+            document.getElementById('confirmYes').onclick = () => {
+                document.getElementById('confirmModal').hidden = true;
+                onConfirm();
+            };
+            
+            document.getElementById('confirmNo').onclick = () => {
+                document.getElementById('confirmModal').hidden = true;
+            };
+        }
+
+        function restart() {
+            showConfirm(
+                'Начать заново',
+                'Начать заново? Проверки и результаты будут сброшены. Скрытое правило останется прежним.',
+                'Начать заново',
+                () => {
+                    initGame();
+                }
+            );
+        }
+
+        document.getElementById('predictAccept').addEventListener('click', () => makePrediction('accept'));
+        document.getElementById('predictReject').addEventListener('click', () => makePrediction('reject'));
+        document.getElementById('checkBtn').addEventListener('click', checkSample);
+        document.getElementById('removeBtn').addEventListener('click', () => {
+            state.selectedCard = null;
+            state.prediction = null;
+            updateChamber();
+            updateControls();
+            document.getElementById('predictAccept').classList.remove('active');
+            document.getElementById('predictAccept').setAttribute('aria-pressed', 'false');
+            document.getElementById('predictReject').classList.remove('active');
+            document.getElementById('predictReject').setAttribute('aria-pressed', 'false');
+            document.getElementById('resultMessage').textContent = '';
+            document.getElementById('resultMessage').className = 'result-message';
+        });
+        document.getElementById('hintBtn').addEventListener('click', useHint);
+        document.getElementById('testBtn').addEventListener('click', startControl);
+        document.getElementById('revealBtn').addEventListener('click', revealRule);
+        document.getElementById('restartBtn').addEventListener('click', restart);
+        document.getElementById('restartFromResult').addEventListener('click', restart);
+        
+        document.getElementById('controlPredictAccept').addEventListener('click', () => controlPredict('accept'));
+        document.getElementById('controlPredictReject').addEventListener('click', () => controlPredict('reject'));
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !document.getElementById('confirmModal').hidden) {
+                document.getElementById('confirmModal').hidden = true;
+            }
+        });
+
+        initGame();
+    </script>
+</body>
+</html>
